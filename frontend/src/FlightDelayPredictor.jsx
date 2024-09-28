@@ -31,6 +31,8 @@ const FlightDelayPredictor = () => {
     try {
       const response = await fetch('http://70.34.200.208:5000/predict', {
         method: 'POST',
+        mode: 'cors',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
