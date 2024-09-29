@@ -11,8 +11,11 @@
       }
     ],
     "rewrites": [
-        { "source": "/api/:path*", "destination": "http://70.34.200.208:5000/:path*" }
-    ]
+      {
+        "source": "/api/(.*)",
+        "destination": "http://70.34.200.208:5000/predict"
+      }
+    ]  
       
   }
   
