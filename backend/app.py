@@ -4,16 +4,35 @@ import joblib
 import pandas as pd
 import numpy as np
 from datetime import datetime
+from google.oauth2.credentials import Credentials
+from googleapiclient.discovery import build
+from googleapiclient.http import MediaIoBaseDownload
+import io
+import os
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*", "methods": ["GET", "POST", "OPTIONS"], "allow_headers": ["Content-Type", "Authorization"]}})
 
-# Load the models
-regression_model = joblib.load('regression_model.joblib')
-classification_model = joblib.load('classification_model.joblib')
-gradient_boosting_model = joblib.load('gradient_boosting_model.joblib')
-kmeans_model = joblib.load('kmeans_model.joblib')
-preprocessor = joblib.load('preprocessor.joblib')
+# Function to load model from Google Drive
+def load_model_from_drive(file_id):
+    creds = Credentials.from_authorized_user_file('token.json', ['https://www.googleapis.com/auth/drive.readonly'])
+    drive_service = build('drive', 'v3', credentials=creds)
+    
+    request = drive_service.files().get_media(fileId=file_id)
+    fh = io.BytesIO()
+    downloader = MediaIoBaseDownload(fh, request)
+    done = False
+    while done is False:
+        status, done = downloader.next_chunk()
+    fh.seek(0)
+    return joblib.load(fh)
+
+# Load the models (replace with your Google Drive file IDs)
+regression_model = load_model_from_drive('your_regression_model_file_id')
+classification_model = load_model_from_drive('your_classification_model_file_id')
+gradient_boosting_model = load_model_from_drive('your_gradient_boosting_model_file_id')
+kmeans_model = load_model_from_drive('your_kmeans_model_file_id')
+preprocessor = load_model_from_drive('your_preprocessor_file_id')
 
 def get_season(month):
     if month in [12, 1, 2]:
@@ -63,7 +82,5 @@ def predict():
         'cluster': int(cluster)
     })
 
-# Vercel requires a handler function
-def handler(request):
-    with app.request_context(request.environ):
-        return app.full_dispatch_request()
+if __name__ == '__main__':
+    app.run(debug=True)
