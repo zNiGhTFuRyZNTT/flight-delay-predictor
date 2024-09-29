@@ -31,7 +31,7 @@ const FlightDelayPredictor = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch('http://70.34.200.208:5000/predict', {
+      const response = await fetch('/api/predict', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
