@@ -6,7 +6,7 @@ import numpy as np
 from datetime import datetime
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "*"}})
+CORS(app)
 
 # Load the models
 regression_model = joblib.load('regression_model.joblib')
@@ -25,7 +25,7 @@ def get_season(month):
     else:
         return 'Fall'
 
-@app.route('/predict', methods=['POST'])
+@app.route('/api/predict', methods=['POST'])
 def predict():
     data = request.json
     
@@ -36,15 +36,15 @@ def predict():
         'year': [date.year],
         'month': [date.month],
         'carrier': [data['carrier']],
-        'airport': [data['origin']],  # Assuming 'airport' in the model refers to origin
-        'arr_flights': [1],  # Placeholder, adjust if needed
-        'arr_del15': [0],  # Placeholder, adjust if needed
-        'carrier_ct': [0],  # Placeholder, adjust if needed
-        'weather_ct': [0],  # Placeholder, adjust if needed
-        'nas_ct': [0],  # Placeholder, adjust if needed
-        'security_ct': [0],  # Placeholder, adjust if needed
-        'late_aircraft_ct': [0],  # Placeholder, adjust if needed
-        'season': [get_season(date.month)]  # Derive season from month
+        'airport': [data['origin']],
+        'arr_flights': [1],
+        'arr_del15': [0],
+        'carrier_ct': [0],
+        'weather_ct': [0],
+        'nas_ct': [0],
+        'security_ct': [0],
+        'late_aircraft_ct': [0],
+        'season': [get_season(date.month)]
     })
 
     # Make predictions
@@ -58,10 +58,12 @@ def predict():
 
     return jsonify({
         'regression_prediction': float(regression_pred),
-        'classification_prediction': classification_pred,
+        'classification_prediction': int(classification_pred),
         'gradient_boosting_prediction': float(gradient_boosting_pred),
         'cluster': int(cluster)
     })
 
-if __name__ == '__main__':
-    app.run(debug=True)
+# Vercel requires a handler function
+def handler(request):
+    with app.request_context(request.environ):
+        return app.full_dispatch_request()
