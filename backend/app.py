@@ -4,15 +4,14 @@ import joblib
 import pandas as pd
 import numpy as np
 from datetime import datetime
-from google.oauth2.credentials import Credentials
-from googleapiclient.discovery import build
-from googleapiclient.http import MediaIoBaseDownload
-import io
 import os
+from download_models import download_all_models
+
+download_all_models()
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {
-    "origins": ["http://localhost:3000", "https://flight-delay-predictor.vercel.app"],
+    "origins": ["https://flight-delay-predictor.vercel.app", "http://localhost:3000"],
     "methods": ["GET", "POST", "OPTIONS"],
     "allow_headers": ["Content-Type", "Authorization"]
 }})
@@ -21,29 +20,15 @@ CORS(app, resources={r"/*": {
 def after_request(response):
     response.headers.add('Access-Control-Allow-Origin', 'https://flight-delay-predictor.vercel.app')
     response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,POST,OPTIONS')
     return response
 
-# Function to load model from Google Drive
-def load_model_from_drive(file_id):
-    creds = Credentials.from_authorized_user_file('token.json', ['https://www.googleapis.com/auth/drive.readonly'])
-    drive_service = build('drive', 'v3', credentials=creds)
-    
-    request = drive_service.files().get_media(fileId=file_id)
-    fh = io.BytesIO()
-    downloader = MediaIoBaseDownload(fh, request)
-    done = False
-    while done is False:
-        status, done = downloader.next_chunk()
-    fh.seek(0)
-    return joblib.load(fh)
-
-# Load the models (replace with your Google Drive file IDs)
-regression_model = load_model_from_drive('your_regression_model_file_id')
-classification_model = load_model_from_drive('your_classification_model_file_id')
-gradient_boosting_model = load_model_from_drive('your_gradient_boosting_model_file_id')
-kmeans_model = load_model_from_drive('your_kmeans_model_file_id')
-preprocessor = load_model_from_drive('your_preprocessor_file_id')
+# Load the models
+regression_model = joblib.load('regression_model.joblib')
+classification_model = joblib.load('classification_model.joblib')
+gradient_boosting_model = joblib.load('gradient_boosting_model.joblib')
+kmeans_model = joblib.load('kmeans_model.joblib')
+preprocessor = joblib.load('preprocessor.joblib')
 
 def get_season(month):
     if month in [12, 1, 2]:
