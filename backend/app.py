@@ -4,24 +4,9 @@ import joblib
 import pandas as pd
 import numpy as np
 from datetime import datetime
-import os
-from download_models import download_all_models
-
-download_all_models()
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {
-    "origins": ["https://flight-delay-predictor.vercel.app", "http://localhost:3000"],
-    "methods": ["GET", "POST", "OPTIONS"],
-    "allow_headers": ["Content-Type", "Authorization"]
-}})
-
-@app.after_request
-def after_request(response):
-    response.headers.add('Access-Control-Allow-Origin', 'https://flight-delay-predictor.vercel.app')
-    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-    response.headers.add('Access-Control-Allow-Methods', 'GET,POST,OPTIONS')
-    return response
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 # Load the models
 regression_model = joblib.load('regression_model.joblib')
@@ -40,7 +25,7 @@ def get_season(month):
     else:
         return 'Fall'
 
-@app.route('/api/predict', methods=['POST'])
+@app.route('/predict', methods=['POST'])
 def predict():
     data = request.json
     
@@ -51,15 +36,15 @@ def predict():
         'year': [date.year],
         'month': [date.month],
         'carrier': [data['carrier']],
-        'airport': [data['origin']],
-        'arr_flights': [1],
-        'arr_del15': [0],
-        'carrier_ct': [0],
-        'weather_ct': [0],
-        'nas_ct': [0],
-        'security_ct': [0],
-        'late_aircraft_ct': [0],
-        'season': [get_season(date.month)]
+        'airport': [data['origin']],  # Assuming 'airport' in the model refers to origin
+        'arr_flights': [1],  # Placeholder, adjust if needed
+        'arr_del15': [0],  # Placeholder, adjust if needed
+        'carrier_ct': [0],  # Placeholder, adjust if needed
+        'weather_ct': [0],  # Placeholder, adjust if needed
+        'nas_ct': [0],  # Placeholder, adjust if needed
+        'security_ct': [0],  # Placeholder, adjust if needed
+        'late_aircraft_ct': [0],  # Placeholder, adjust if needed
+        'season': [get_season(date.month)]  # Derive season from month
     })
 
     # Make predictions
