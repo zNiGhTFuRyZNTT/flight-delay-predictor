@@ -58,7 +58,7 @@ def predict():
 
     return jsonify({
         'regression_prediction': float(regression_pred),
-        'classification_prediction': int(classification_pred),
+        'classification_prediction': classification_pred,
         'gradient_boosting_prediction': float(gradient_boosting_pred),
         'cluster': int(cluster)
     })
