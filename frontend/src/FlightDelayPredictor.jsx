@@ -31,14 +31,13 @@ const FlightDelayPredictor = () => {
     setLoading(true);
     setError(null);
     try {
-      const API_URL = import.meta.env.VITE_API_URL || '/api';
+      const API_URL = import.meta.env.VITE_API_URL || 'http://70.34.200.208:5000';
       const response = await fetch(`${API_URL}/predict`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(formData),
-        credentials: 'include'
       });
       
       if (!response.ok) {
@@ -49,7 +48,11 @@ const FlightDelayPredictor = () => {
       setPrediction(data);
     } catch (error) {
       console.error('Error making prediction:', error);
-      setError('Failed to get prediction. Please try again.');
+      if (error.message.includes('Failed to fetch')) {
+        setError('Unable to connect to the server. Please check your internet connection and try again.');
+      } else {
+        setError('Failed to get prediction. Please try again later.');
+      }
     } finally {
       setLoading(false);
     }
