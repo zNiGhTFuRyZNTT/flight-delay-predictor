@@ -39,7 +39,7 @@ This project is a flight delay prediction system consisting of a machine learnin
    ```
 
 3. Run the app:
-   - For production on VPS:
+   - For production on only Linux VPS:
      ```
      gunicorn app:app
      ```
@@ -51,7 +51,7 @@ This project is a flight delay prediction system consisting of a machine learnin
 4. Note the port and address where the app is running.
 
 ### Bridge API
-
+####  NOTE: If you are running the code on your local machine you can skip setting up the bridge. run the backend directly and put the address inside frontend/.env.
 1. Navigate to the bridge directory:
    ```
    cd bridge
@@ -95,7 +95,7 @@ The bridge API was implemented to solve a specific hosting and communication iss
 
 The React frontend is hosted on Vercel.
 The Flask API (backend) is hosted on a VPS using Gunicorn.
-Due to the complexity and errors encountered when trying to obtain an SSL certificate for the VPS, a direct connection between the frontend and backend was problematic.
+Due to the complexity and errors encountered when trying to obtain an SSL certificate for the VPS, a direct connection between the frontend and backend was problematic because vercel blocks requests to urls without SSL (http).
 
 To resolve this, a bridge API was set up on Heroku, which provides SSL by default. The communication flow works as follows:
 
@@ -105,6 +105,7 @@ The response from the Flask API travels back through the bridge to the client.
 
 This setup allows secure communication between the frontend and backend while avoiding the SSL certificate issues on the VPS.
 
+## for local testing skip setting up the bridge.
 ## Local Development
 
 For local development, you can bypass the bridge API:

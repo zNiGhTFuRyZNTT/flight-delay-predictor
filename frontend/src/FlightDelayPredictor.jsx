@@ -30,7 +30,7 @@ const FlightDelayPredictor = () => {
     setLoading(true); // show the spinner while we retrieve data from the server
     setError(null); // as we have no error at this moment its set to null, if we run into an error later we will update the state
     try {
-      const API_URL = import.meta.env.VITE_API_URL || 'http://70.34.200.208:5000'; // use url from .env if exists or use default
+      const API_URL = import.meta.env.VITE_API_URL || 'https://bridge-flight-predictor-8bb28665269f.herokuapp.com'; // use url from .env if exists or use default
       const response = await fetch(`${API_URL}/predict`, { // send a post request to the bridge api
         method: 'POST',
         headers: {
