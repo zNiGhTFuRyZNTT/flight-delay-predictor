@@ -9,44 +9,44 @@ const FlightDelayPredictor = () => {
     destination: '',
     num_flights: '',
     weather_delays: '',
-  });
+  }); // define the structure of the data we are going to use
   const [prediction, setPrediction] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false); // for showing the spinner while loading the predictions
   const [error, setError] = useState(null);
-  const [carriers, setCarriers] = useState([]);
-  const [airports, setAirports] = useState([]);
 
-  useEffect(() => {
-    setCarriers(['YV', 'YX', 'ZW', '9E', 'AA', 'AS', 'B6', 'DL', 'F9', 'G4', 'HA', 'NK', 'OH', 'OO', 'UA', 'WN']);
-    setAirports(['ATL', 'AUS', 'BNA', 'BOS', 'BWI', 'CLT', 'DCA', 'DEN', 'DFW', 'DTW', 'EWR', 'FLL', 'IAD', 'IAH', 'JFK', 'LAS', 'LAX', 'LGA', 'MCO', 'MDW', 'MIA', 'MSP', 'ORD', 'PHL', 'PHX', 'SAN', 'SEA', 'SFO', 'SLC', 'TPA']);
-  }, []);
+  // define carriers
+  const [carriers, setCarriers] = useState(['YV', 'YX', 'ZW', '9E', 'AA', 'AS', 'B6', 'DL', 'F9', 'G4', 'HA', 'NK', 'OH', 'OO', 'UA', 'WN']);
+  // define airports
+  const [airports, setAirports] = useState(['ATL', 'AUS', 'BNA', 'BOS', 'BWI', 'CLT', 'DCA', 'DEN', 'DFW', 'DTW', 'EWR', 'FLL', 'IAD', 'IAH', 'JFK', 'LAS', 'LAX', 'LGA', 'MCO', 'MDW', 'MIA', 'MSP', 'ORD', 'PHL', 'PHX', 'SAN', 'SEA', 'SFO', 'SLC', 'TPA']);
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    // when user selects options we update the formData state in order to submit to the server for prediction.
+    const { name, value } = e.target; // deconstructing name and value from e.target
+    setFormData({ ...formData, [name]: value }); // updating the formData by adding new values to its current data
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
+    e.preventDefault(); // prevents page from re-rendering on button click.
+    setLoading(true); // show the spinner while we retrieve data from the server
+    setError(null); // as we have no error at this moment its set to null, if we run into an error later we will update the state
     try {
-      const API_URL = import.meta.env.VITE_API_URL || 'http://70.34.200.208:5000';
-      const response = await fetch(`${API_URL}/predict`, {
+      const API_URL = import.meta.env.VITE_API_URL || 'http://70.34.200.208:5000'; // use url from .env if exists or use default
+      const response = await fetch(`${API_URL}/predict`, { // send a post request to the bridge api
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(formData), // stringifying our data to be sent as a raw format
       });
       
-      if (!response.ok) {
+      if (!response.ok) { // throw error if there was any
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       
-      const data = await response.json();
-      setPrediction(data);
+      const data = await response.json(); // get the jsonified fetched data
+      setPrediction(data); // set the data as the prediction results
     } catch (error) {
+      //  setting and showing the error if something went wrong
       console.error('Error making prediction:', error);
       if (error.message.includes('Failed to fetch')) {
         setError('Unable to connect to the server. Please check your internet connection and try again.');
@@ -54,7 +54,7 @@ const FlightDelayPredictor = () => {
         setError('Failed to get prediction. Please try again later.');
       }
     } finally {
-      setLoading(false);
+      setLoading(false); // hide the loading spinner after the operation was finished (either successfull or with an error).
     }
   };
 
