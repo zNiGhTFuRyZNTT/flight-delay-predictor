@@ -28,7 +28,7 @@ const Home = () => {
     setLoading(true);
     setError(null);
     try {
-      const API_URL = 'http://70.34.200.208:5000';
+        const API_URL = import.meta.env.VITE_API_URL || 'https://bridge-flight-predictor-8bb28665269f.herokuapp.com';
       const response = await fetch(`${API_URL}/predict`, {
         method: 'POST',
         headers: {
