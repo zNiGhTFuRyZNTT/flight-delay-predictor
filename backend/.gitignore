@@ -1,2 +1,4 @@
 /menv
 *.joblib
+token.json
+credentials.json

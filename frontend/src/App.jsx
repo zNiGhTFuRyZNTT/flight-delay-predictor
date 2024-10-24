@@ -1,12 +1,16 @@
 import React from 'react';
-import FlightDelayPredictor from './FlightDelayPredictor';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Home, Results } from './pages';
 
-function App() {
+const App = () => {
   return (
-    <div className="App">
-      <FlightDelayPredictor />
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/results" element={<Results />} />
+      </Routes>
+    </BrowserRouter>
   );
-}
+};
 
 export default App;
